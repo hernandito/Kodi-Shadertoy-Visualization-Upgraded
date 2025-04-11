@@ -9,12 +9,12 @@ In addition, with the help of Grok AI, we created a script/service that cycles t
 
 
 ## Instructions
-Copy both folders:
+Copy both folders below to your Kodi's /addons folder:
 
      screensaver.shadertoy
 	 service.shadertoy.cycler 
 	 
-To your Kodi's /addons folder. 
+
 Go to Kodi > Addons > Look & Feel > Screensaver and ENABLE the screensaver addon.
 Go to Kodi > Addons > Services > and ENABLE the service addon.
 
