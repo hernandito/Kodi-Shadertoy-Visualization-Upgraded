@@ -1,0 +1,104 @@
+```python
+import xbmc
+import xbmcaddon
+import xbmcvfs
+import os
+import random
+import time
+
+ADDON = xbmcaddon.Addon()
+ADDON_ID = ADDON.getAddonInfo('id')  # Will be "service.shadertoy.cycler"
+SHADER_PATH = xbmcvfs.translatePath('special://home/addons/screensaver.shadertoy/resources/shaders/')
+TEXTURE_PATH = "/storage/.kodi/addons/screensaver.shadertoy/resources/"  # Corrected path
+CYCLE_INTERVAL = 10  # 10 seconds for testing
+LOG_INTERVAL = 5     # Log every 5 seconds
+
+# Map shaders to textures
+SHADER_TEXTURES = {
+    'balloffire.frag.glsl': 'tex03.png',
+    # Only set tex03.png for balloffire.frag.glsl
+}
+
+class ShaderCycler(xbmc.Monitor):
+    def __init__(self):
+        super().__init__()
+        self.current_shader = ''
+        self.shaders = []
+        xbmc.log(f"{ADDON_ID}: Initializing ShaderCycler", xbmc.LOGINFO)
+        self.load_shaders()
+        if self.shaders:
+            xbmc.log(f"{ADDON_ID}: Shaders loaded, starting initial cycle", xbmc.LOGINFO)
+            self.cycle_shaders()
+
+    def load_shaders(self):
+        try:
+            dirs, files = xbmcvfs.listdir(SHADER_PATH)
+            self.shaders = [f for f in files if f.endswith('.frag.glsl')]
+            if not self.shaders:
+                xbmc.log(f"{ADDON_ID}: No shaders found in {SHADER_PATH}", xbmc.LOGERROR)
+            else:
+                xbmc.log(f"{ADDON_ID}: Loaded {len(self.shaders)} shaders: {self.shaders}", xbmc.LOGINFO)
+        except Exception as e:
+            xbmc.log(f"{ADDON_ID}: Error loading shaders: {str(e)}", xbmc.LOGERROR)
+
+    def set_shader(self, shader):
+        if not xbmcvfs.exists(os.path.join(SHADER_PATH, shader)):
+            xbmc.log(f"{ADDON_ID}: Shader {shader} not found", xbmc.LOGERROR)
+            return
+        xbmc.log(f"{ADDON_ID}: Attempting to set shader to {shader}", xbmc.LOGINFO)
+        xbmc.executebuiltin(f'Skin.SetString(ShadertoyShader,{shader})')
+        # Only set texture for balloffire.frag.glsl
+        if shader in SHADER_TEXTURES:
+            texture = SHADER_TEXTURES[shader]
+            texture_path = os.path.join(TEXTURE_PATH, texture)
+            if os.path.exists(texture_path):
+                xbmc.executebuiltin(f'Skin.SetString(ShadertoyTexture0,{texture_path})')
+                xbmc.log(f"{ADDON_ID}: Set {shader} with texture {texture} at {texture_path}", xbmc.LOGINFO)
+            else:
+                xbmc.log(f"{ADDON_ID}: Texture {texture} not found for {shader} at {texture_path}, clearing", xbmc.LOGERROR)
+                xbmc.executebuiltin(f'Skin.SetString(ShadertoyTexture0,)')
+        else:
+            xbmc.log(f"{ADDON_ID}: No texture assigned for {shader}, clearing", xbmc.LOGINFO)
+            xbmc.executebuiltin(f'Skin.SetString(ShadertoyTexture0,)')
+        self.current_shader = shader
+        # Log screensaver state but don't force refresh
+        if xbmc.getCondVisibility('System.ScreenSaverActive'):
+            xbmc.log(f"{ADDON_ID}: Screensaver active during shader change to {shader}", xbmc.LOGINFO)
+        else:
+            xbmc.log(f"{ADDON_ID}: Screensaver not active during shader change to {shader}", xbmc.LOGINFO)
+
+    def cycle_shaders(self):
+        if not self.shaders:
+            xbmc.log(f"{ADDON_ID}: No shaders to cycle", xbmc.LOGERROR)
+            return
+        random.shuffle(self.shaders)
+        next_shader = self.shaders[0]
+        if next_shader == self.current_shader and len(self.shaders) > 1:
+            next_shader = self.shaders[1]
+        xbmc.log(f"{ADDON_ID}: Cycling to {next_shader}", xbmc.LOGINFO)
+        self.set_shader(next_shader)
+        xbmc.log(f"{ADDON_ID}: Cycled to {next_shader}, order: {self.shaders[:5]}...", xbmc.LOGINFO)
+
+    def onScreensaverActivated(self):
+        xbmc.log(f"{ADDON_ID}: Screensaver activated", xbmc.LOGINFO)
+        self.cycle_shaders()
+
+    def onScreensaverDeactivated(self):
+        xbmc.log(f"{ADDON_ID}: Screensaver deactivated", xbmc.LOGINFO)
+
+if __name__ == '__main__':
+    xbmc.log(f"{ADDON_ID}: Starting shader cycler service", xbmc.LOGINFO)
+    monitor = ShaderCycler()
+    last_cycle = time.time()
+    last_log = last_cycle
+    while not monitor.abortRequested():
+        current_time = time.time()
+        if current_time - last_log >= LOG_INTERVAL:
+            xbmc.log(f"{ADDON_ID}: Running, current: {monitor.current_shader}", xbmc.LOGINFO)
+            last_log = current_time
+        if current_time - last_cycle >= CYCLE_INTERVAL:
+            monitor.cycle_shaders()
+            last_cycle = current_time
+        monitor.waitForAbort(1)
+    xbmc.log(f"{ADDON_ID}: Stopping shader cycler service", xbmc.LOGINFO)
+```

@@ -1,143 +1,289 @@
-// Taken from https://www.shadertoy.com/view/lds3zr
+// Shadertoy-compatible Flowing Ribbons shader for Kodi screensaver
+// Lines with drop shadows, opaque color fills, and configurable background gradients
+//
+// Most parameters are configurable to create your own customized version.
+// I like using this site to be able to pick my colors: https://rgbcolorpicker.com/0-1
+//
+// by Elmangomez, ChatGPT and Grok AI.
 
+#define NUM_LINES 10           // Number of seismograph lines
+#define LINE_SPACING 0.18      // Vertical spacing between lines
+#define AMPLITUDE 0.15         // Base amplitude
+#define TIME_SCALE 0.4         // Time multiplier for motion
+#define WAVE_DETAIL 16.0       // Higher = more complex wave
+#define LINE_THICKNESS 0.001   // Thickness of the waveform line
 
-//-----------------------------------------------------------------------------
-// Utils
-//-----------------------------------------------------------------------------
-float t = iGlobalTime*.5;
+// ADJUSTABLE: Bottom shadow settings
+// BOTTOM_SHADOW_ENABLED: Set to 1 to enable the drop shadow below the lines, 0 to disable
+#define BOTTOM_SHADOW_ENABLED 1
+// BOTTOM_SHADOW_ALPHA: Maximum darkness/lightness of the drop shadow below the lines
+#define BOTTOM_SHADOW_ALPHA 0.45
+// BOTTOM_SHADOW_SIZE: Vertical size of the shadow fade region below the lines
+#define BOTTOM_SHADOW_SIZE 0.1
+// BOTTOM_SHADOW_LIGHTEN: Set to 1 to lighten the area below the lines, 0 to darken
+#define BOTTOM_SHADOW_LIGHTEN 0
 
-vec3 rotateY(vec3 v, float x)
-{
-    return vec3(
-        cos(x)*v.x - sin(x)*v.z,
-        v.y,
-        sin(x)*v.x + cos(x)*v.z
-    );
-}
+// ADJUSTABLE: Top shadow settings
+// TOP_SHADOW_ENABLED: Set to 1 to enable the drop shadow above the lines, 0 to disable
+#define TOP_SHADOW_ENABLED 1
+// TOP_SHADOW_ALPHA: Maximum darkness/lightness of the drop shadow above the lines
+#define TOP_SHADOW_ALPHA 0.15
+// TOP_SHADOW_SIZE: Vertical size of the shadow fade region above the lines
+#define TOP_SHADOW_SIZE 0.02
+// TOP_SHADOW_LIGHTEN: Set to 1 to lighten the area above the lines, 0 to darken
+#define TOP_SHADOW_LIGHTEN 1
 
-vec3 rotateX(vec3 v, float x)
-{
-    return vec3(
-        v.x,
-        v.y*cos(x) - v.z*sin(x),
-        v.y*sin(x) + v.z*cos(x)
-    );
-}
+// ADJUSTABLE: Gradient type for the background
+// 0: Flat color (uses BACKGROUND_COLOR_1)
+// 1: Two-color linear gradient (uses BACKGROUND_COLOR_1 and BACKGROUND_COLOR_2)
+// 2: Three-color linear gradient (uses all three colors)
+// 3: Two-color radial gradient (uses BACKGROUND_COLOR_1 and BACKGROUND_COLOR_2)
+// 4: Three-color radial gradient (uses all three colors)
+#define GRADIENT_TYPE 4
 
-vec3 rotateZ(vec3 v, float x)
-{
-    return vec3(
-        v.x*cos(x) - v.y*sin(x),
-        v.x*sin(x) + v.y*cos(x),
-        v.z
-    );
-}
-//-----------------------------------------------------------------------------
-// Scene/Objects
-//-----------------------------------------------------------------------------
-float box(vec3 p, vec3 pos, vec3 size)
-{
-	return max(max(abs(p.x-pos.x)-size.x,abs(p.y-pos.y)-size.y),abs(p.z-pos.z)-size.z);
-}
+// ADJUSTABLE: Colors for the background gradient
+// BACKGROUND_COLOR_1: Used as the flat color, top color in linear gradients, or center color in radial gradients
+// Default: Matches the base fill color (vec3(0.0, 0.4, 0.2))
+vec3 BACKGROUND_COLOR_1 = vec3(0.0, 0.4, 0.2);
 
+// BACKGROUND_COLOR_2: Bottom color in two-color linear gradients, middle color in three-color linear gradients, or outer color in two-color radial gradients
+// Default: Darker green (vec3(0.0, 0.2, 0.15))
+vec3 BACKGROUND_COLOR_2 = vec3(0.0, 0.2, 0.15); // Set to a distinct color for testing
 
-float ribbon1(vec3 p)
-{
-	return box(p,vec3(cos(p.z)*.5,sin(p.z+p.x)*.5,.0),vec3(.02,0.02,3.5+t));
-}
-float ribbon2(vec3 p)
-{
-	return box(p,vec3(cos(p.z+1.5+p.x)*.6,sin(p.z+1.)*.3,.0),vec3(.02,0.02,3.+t));
-}
-float ribbon3(vec3 p)
-{
-	return box(p,vec3(sin(p.z+p.y)*.4,cos(p.z+p.x)*.5,.0),vec3(.02,0.02,4.+t));
-}
-float ribbon4(vec3 p)
-{
-	return box(p,vec3(sin(p.z+1.5+p.x)*.5,cos(p.z+1.5)*.6,.0),vec3(.02,0.02,2.+t));
-}
-float scene(vec3 p)
-{
-	float d = .5-abs(p.y);
-	d = min(d, ribbon1(p) );
-	d = min(d, ribbon2(p) );
-	d = min(d, ribbon3(p) );
-	d = min(d, ribbon4(p) );
-	
-	return d;
-}
+// BACKGROUND_COLOR_3: Bottom color in three-color linear gradients, or outer color in three-color radial gradients
+// Default: Dark gray (vec3(0.0, 0.1, 0.075)) as an example
+vec3 BACKGROUND_COLOR_3 = vec3(0.0, 0.1, 0.075);
 
-//-----------------------------------------------------------------------------
-// Raymarching tools
-//-----------------------------------------------------------------------------
-//Raymarche by distance field
-vec3 Raymarche(vec3 org, vec3 dir, int step)
-{
-	float d=0.0;
-	vec3 p=org;
-	
-	for(int i=0; i<64; i++)
-	{
-		d = scene(p);
-		p += d * dir;
-	}
-	
-	return p;
-}
-//get Normal
-vec3 getN(vec3 p)
-{
-	vec3 eps = vec3(0.01,0.0,0.0);
-	return normalize(vec3(
-		scene(p+eps.xyy)-scene(p-eps.xyy),
-		scene(p+eps.yxy)-scene(p-eps.yxy),
-		scene(p+eps.yyx)-scene(p-eps.yyx)
-	));
+// ADJUSTABLE: Angle for linear gradients (in degrees)
+// 0 degrees = rightward, 90 degrees = top-to-bottom, 180 degrees = leftward, 270 degrees = bottom-to-top
+// Default: -45 degrees for diagonal gradient
+#define GRADIENT_ANGLE -45.0
+
+// ADJUSTABLE: Center position for radial gradients (in UV space, 0.0 to 1.0)
+// Default: Center of the screen (vec2(0.5, 0.5))
+#define RADIAL_CENTER vec2(0.5, 0.5)
+
+float rand(float x) {
+    return fract(sin(x * 12.9898) * 43758.5453);
 }
 
-//Ambiant Occlusion
-float AO(vec3 p, vec3 n)
-{
-	float dlt = 0.1;
-	float oc = 0.0, d = 1.0;
-	for(int i = 0; i<6; i++)
-	{
-		oc += (float(i) * dlt - scene(p + n * float(i) * dlt)) / d;
-		d *= 2.0;
-	}
-	return clamp(1.0 - oc, 0.0, 1.0);
+// Seismograph waveform generator
+float seismoWave(float x, float time, float lineOffset) {
+    float freq = 3.0 + sin(time * 0.5 + lineOffset) * 2.0;
+    float t = x * freq + time + lineOffset * 2.0;
+    float wave = sin(t * 3.1415) * sin(t * 0.5) + sin(t * 2.5);
+    wave += 0.3 * sin(t * 7.0 + sin(time + lineOffset * 3.0)); // higher freq jitter
+    wave *= (0.3 + 0.7 * sin(time * 0.25 + lineOffset * 1.3)); // magnitude variation
+    return wave * AMPLITUDE;
 }
 
-//-----------------------------------------------------------------------------
-// Main Loop
-//-----------------------------------------------------------------------------
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-	vec4 color = vec4(0.0);
-	float bass = texture2D( iChannel0, vec2(20./256.,0.25) ).x*.75+texture2D( iChannel0, vec2(50./256.,0.25) ).x*.25;
-	vec2 v = -1.0 + 2.0 * fragCoord.xy / iResolution.xy;
-	v.x *= iResolution.x/iResolution.y;
-	
-	vec3 org = vec3(texture2D( iChannel0, vec2(1./256.,0.25) ).x*.2+1.,+0.3+bass*.05,t+5.);
-	vec3 dir = normalize(vec3(v.x,-v.y,2.));
-	dir = rotateX(dir,.15);
-	dir = rotateY(dir,2.8);
-	
-	
-	vec3 p = Raymarche(org,dir,48);
-	vec3 n = getN(p);
-	
-	
-    color = vec4( max( dot(n.xy*-1.,normalize(p.xy-vec2(.0,-.1))),.0)*.01 );
-	color += vec4(1.0,0.3,0.0,1.0)/(ribbon1(p-n*.01)*20.+.75)*pow(bass,2.)*3.;
-	color += vec4(0.5,0.3,0.7,1.0)/(ribbon2(p-n*.01)*20.+.75)*pow(texture2D( iChannel0, vec2(64./256.,0.25) ).x,2.)*2.;
-	color += vec4(0.0,0.5,1.0,1.0)/(ribbon3(p-n*.01)*20.+.75)*pow(texture2D( iChannel0, vec2(128./256.,0.25) ).x,2.)*5.;
-	color += vec4(0.0,1.0,0.2,1.0)/(ribbon4(p-n*.01)*20.+.75)*pow(texture2D( iChannel0, vec2(200./256.,0.25) ).x,2.)*5.;
-	color *= AO(p,n);
-	color = mix(color,vec4(0.),vec4((min(distance(org,p)*.05,1.0))));
-	
-	
-	fragColor = color;
+// Function to compute the background color based on UV coordinates
+vec3 getBackgroundColor(vec2 uv) {
+    #if GRADIENT_TYPE == 0
+        // Flat color
+        return BACKGROUND_COLOR_1;
+    
+    #elif GRADIENT_TYPE == 1
+        // Two-color linear gradient (top to bottom when GRADIENT_ANGLE = 90.0)
+        float angleRad = radians(GRADIENT_ANGLE);
+        vec2 dir = vec2(cos(angleRad), sin(angleRad));
+        float t = dot(uv - vec2(0.5), dir);
+        t = (t + 0.707) / 1.414; // Normalize to [0, 1]
+        t = clamp(t, 0.0, 1.0);
+        // Invert t for top-to-bottom mapping when angle is around 90 degrees
+        if (abs(GRADIENT_ANGLE - 90.0) < 0.1 || abs(GRADIENT_ANGLE - 270.0) < 0.1) {
+            t = 1.0 - uv.y; // Directly use uv.y for top-to-bottom
+        }
+        return mix(BACKGROUND_COLOR_1, BACKGROUND_COLOR_2, t);
+    
+    #elif GRADIENT_TYPE == 2
+        // Three-color linear gradient (top to bottom when GRADIENT_ANGLE = 90.0)
+        float angleRad = radians(GRADIENT_ANGLE);
+        vec2 dir = vec2(cos(angleRad), sin(angleRad));
+        float t = dot(uv - vec2(0.5), dir);
+        t = (t + 0.707) / 1.414;
+        t = clamp(t, 0.0, 1.0);
+        // Invert t for top-to-bottom mapping
+        if (abs(GRADIENT_ANGLE - 90.0) < 0.1 || abs(GRADIENT_ANGLE - 270.0) < 0.1) {
+            t = 1.0 - uv.y;
+        }
+        if (t < 0.5) {
+            return mix(BACKGROUND_COLOR_1, BACKGROUND_COLOR_2, t * 2.0);
+        } else {
+            return mix(BACKGROUND_COLOR_2, BACKGROUND_COLOR_3, (t - 0.5) * 2.0);
+        }
+    
+    #elif GRADIENT_TYPE == 3
+        // Two-color radial gradient
+        float r = length(uv - RADIAL_CENTER);
+        float t = r / 0.707; // Normalize based on max distance (sqrt(2)/2)
+        t = clamp(t, 0.0, 1.0);
+        return mix(BACKGROUND_COLOR_1, BACKGROUND_COLOR_2, t);
+    
+    #elif GRADIENT_TYPE == 4
+        // Three-color radial gradient
+        float r = length(uv - RADIAL_CENTER);
+        float t = r / 0.707;
+        t = clamp(t, 0.0, 1.0);
+        if (t < 0.5) {
+            return mix(BACKGROUND_COLOR_1, BACKGROUND_COLOR_2, t * 2.0);
+        } else {
+            return mix(BACKGROUND_COLOR_2, BACKGROUND_COLOR_3, (t - 0.5) * 2.0);
+        }
+    
+    #else
+        // Default to flat color if GRADIENT_TYPE is invalid
+        return BACKGROUND_COLOR_1;
+    #endif
+}
 
+// Function to get the line and fill colors based on the line index
+void getColors(int index, out vec3 lineColor, out float fillIntensity) {
+    float t = float(index) / float(NUM_LINES);
+    
+    // ADJUSTABLE: Color for all lines (matches the top line from previous gradient)
+    // This defines the uniform color of all seismograph lines.
+    // Default: Dark green (vec3(0.0, 0.8, 0.4))
+    // Examples:
+    // - Red: vec3(1.0, 0.0, 0.0)
+    // - Blue: vec3(0.0, 0.0, 1.0)
+    // - White: vec3(1.0, 1.0, 1.0)
+    vec3 lineColorUniform = vec3(0.0, 0.8, 0.4);
+    
+    // ADJUSTABLE: Base intensity for the fills (region below the topmost line)
+    // This defines the fill intensity below the topmost line, extending to the top of the screen.
+    // Default: 0.8 (fairly dark)
+    float baseFillIntensity = 0.8;
+    
+    // ADJUSTABLE: End intensity for the fill gradient (region below the bottommost line)
+    // This defines the fill intensity below the bottommost line, extending to the bottom of the screen.
+    // The fill intensities transition smoothly from baseFillIntensity (top) to endFillIntensity (bottom).
+    // Default: 0.4 (lighter)
+    float endFillIntensity = 0.4;
+    
+    // Set the line color to be uniform for all lines
+    lineColor = lineColorUniform;
+    
+    // Compute the gradient for the fill intensities
+    fillIntensity = mix(baseFillIntensity, endFillIntensity, t);
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = fragCoord.xy / iResolution.xy;
+    float aspect = iResolution.x / iResolution.y;
+    vec2 centeredUV = uv * 2.0 - 1.0;
+    centeredUV.x *= aspect;
+
+    float time = iTime * TIME_SCALE;
+
+    // Start with the background gradient
+    vec3 color = getBackgroundColor(uv);
+
+    // First Pass: Compute the fill intensity for all lines
+    float fillIntensity = 1.0; // Default to 1.0 (no darkening) if no fill is applied
+    bool filled = false;
+    for (int i = 0; i < NUM_LINES; i++) {
+        float yOffset = 1.0 - float(i) * LINE_SPACING - 0.2;
+        float wave = seismoWave(centeredUV.x, time, float(i));
+        float lineY = yOffset + wave;
+        
+        vec3 lineColor;
+        float lineFillIntensity;
+        getColors(i, lineColor, lineFillIntensity);
+
+        // Apply fill intensity under the waveform
+        if (!filled && centeredUV.y < lineY) {
+            fillIntensity = lineFillIntensity; // Use the intensity to darken the background
+            filled = true;                     // Prevent lower lines from filling this pixel
+        }
+    }
+
+    // If no fill was applied (pixel is above the top line), use the top line's fill intensity
+    if (!filled) {
+        vec3 lineColor;
+        float lineFillIntensity;
+        getColors(0, lineColor, lineFillIntensity);
+        fillIntensity = lineFillIntensity;
+    }
+
+    // Apply the fill intensity to the background gradient
+    color *= fillIntensity;
+
+    // Second Pass: Compute the combined drop shadow effects (top and bottom)
+    float topShadowIntensity = 0.0;
+    float bottomShadowIntensity = 0.0;
+    for (int i = 0; i < NUM_LINES; i++) {
+        float yOffset = 1.0 - float(i) * LINE_SPACING - 0.2;
+        float wave = seismoWave(centeredUV.x, time, float(i));
+        float lineY = yOffset + wave;
+
+        // Compute the top shadow (above the line)
+        #if TOP_SHADOW_ENABLED == 1
+        float topShadowDist = centeredUV.y - lineY; // Positive when above the line
+        if (topShadowDist > 0.0 && topShadowDist < TOP_SHADOW_SIZE) {
+            float shadowFade = smoothstep(TOP_SHADOW_SIZE, 0.0, topShadowDist);
+            topShadowIntensity = max(topShadowIntensity, TOP_SHADOW_ALPHA * shadowFade);
+        }
+        #endif
+
+        // Compute the bottom shadow (below the line)
+        #if BOTTOM_SHADOW_ENABLED == 1
+        float bottomShadowDist = lineY - centeredUV.y; // Positive when below the line
+        if (bottomShadowDist > 0.0 && bottomShadowDist < BOTTOM_SHADOW_SIZE) {
+            float shadowFade = smoothstep(BOTTOM_SHADOW_SIZE, 0.0, bottomShadowDist);
+            bottomShadowIntensity = max(bottomShadowIntensity, BOTTOM_SHADOW_ALPHA * shadowFade);
+        }
+        #endif
+    }
+
+    // Apply the top shadow effect
+    #if TOP_SHADOW_ENABLED == 1
+    #if TOP_SHADOW_LIGHTEN == 1
+    color = mix(color, vec3(1.0), topShadowIntensity); // Lighten towards white
+    #else
+    color *= (1.0 - topShadowIntensity); // Darken
+    #endif
+    #endif
+
+    // Apply the bottom shadow effect
+    #if BOTTOM_SHADOW_ENABLED == 1
+    #if BOTTOM_SHADOW_LIGHTEN == 1
+    color = mix(color, vec3(1.0), bottomShadowIntensity); // Lighten towards white
+    #else
+    color *= (1.0 - bottomShadowIntensity); // Darken
+    #endif
+    #endif
+
+    // Third Pass: Draw the lines on top (opaque, topmost line takes precedence)
+    float closestDist = 9999.0; // Large initial distance
+    vec3 closestLineColor = vec3(0.0);
+    float closestBrightness = 0.0;
+
+    // First loop: Find the closest line to this pixel
+    for (int i = 0; i < NUM_LINES; i++) {
+        float yOffset = 1.0 - float(i) * LINE_SPACING - 0.2;
+        float wave = seismoWave(centeredUV.x, time, float(i));
+        float lineY = yOffset + wave;
+        
+        vec3 lineColor;
+        float fillIntensity;
+        getColors(i, lineColor, fillIntensity);
+
+        float dist = abs(centeredUV.y - lineY);
+        if (dist < closestDist) {
+            closestDist = dist;
+            closestLineColor = lineColor;
+            closestBrightness = smoothstep(3./iResolution.y, 0., dist);
+        }
+    }
+
+    // Second loop: Draw only the closest line (opaque)
+    if (closestBrightness > 0.0) {
+        // Blend the line color with the background based on brightness (for anti-aliasing)
+        // Since brightness is 0.0 to 1.0, this ensures the line is opaque at its center
+        color = mix(color, closestLineColor, closestBrightness);
+		
+    }
+
+    fragColor = vec4(color, 1.0);
 }
