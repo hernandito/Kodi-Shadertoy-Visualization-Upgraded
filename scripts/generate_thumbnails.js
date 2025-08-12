@@ -53,8 +53,8 @@ async function generateThumbnails() {
                 // We use <img src="..." width="..." alt="..." style="..."> inside an <a> tag.
                 // The `?raw=true` is still important for GitHub to serve the raw image content.
                 imageMarkdown.push(
-                    `<a href="${fullResRelativePath}?raw=true" style="display: inline-block; margin: 5px !important; text-decoration: none;">` + // Increased margin to 15px
-                    `<img src="${thumbnailRelativePath}?raw=true" alt="Thumbnail of ${fullResBaseName}" width="128" style="border: 1px solid #ddd; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); max-width: 100%; height: auto;">` +
+                    `<a href="${fullResRelativePath}?raw=true" style="display: inline-block; text-decoration: none;">` +
+                    `<img src="${thumbnailRelativePath}?raw=true" alt="Thumbnail of ${fullResBaseName}" width="128" style="border: 1px solid #ddd; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); max-width: 100%; height: auto; padding: 5px;">` + // Applied padding here
                     `</a>`
                 );
             }
