@@ -50,19 +50,19 @@ async function generateThumbnails() {
                 const fullResRelativePath = path.join(FULL_RESOLUTION_DIR, `${fullResBaseName}${ext}`).replace(/\\/g, '/');
 
                 // Create HTML for a clickable thumbnail.
-                // We use <img src="..." width="..." alt="..." style="..."> inside an <a> tag.
-                // The `?raw=true` is still important for GitHub to serve the raw image content.
+                // Removed margin from <a> tag.
+                // Added padding to <img> tag for spacing (though GitHub may strip it).
                 imageMarkdown.push(
                     `<a href="${fullResRelativePath}?raw=true" style="display: inline-block; text-decoration: none;">` +
-                    `<img src="${thumbnailRelativePath}?raw=true" alt="Thumbnail of ${fullResBaseName}" width="128" style="border: 1px solid #ddd; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); max-width: 100%; height: auto; padding: 5px;">` + // Applied padding here
+                    `<img src="${thumbnailRelativePath}?raw=true" alt="Thumbnail of ${fullResBaseName}" width="128" style="border: 1px solid #ddd; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); max-width: 100%; height: auto;">` + // Removed padding here, as it was not rendered.
                     `</a>`
                 );
             }
         }
 
-        // Join all generated HTML image links
-        // We'll join them without spaces, relying on the 'margin' in the HTML style for spacing
-        const newContent = imageMarkdown.join('');
+        // Join all generated HTML image links with non-breaking spaces for horizontal gaps.
+        // Each `&nbsp;` creates a single space character. You can add more for larger gaps.
+        const newContent = imageMarkdown.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); // Added 5 non-breaking spaces
 
         // Reconstruct the README content by replacing the old thumbnail section
         const before = readmeContent.substring(0, startIndex + START_MARKER.length);
