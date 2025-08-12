@@ -6,7 +6,7 @@ const THUMBNAILS_DIR = 'screensaver.shadertoy/Shader-Screens/thumbnails'; // Dir
 const FULL_RESOLUTION_DIR = 'screensaver.shadertoy/Shader-Screens'; // Directory containing full-res images
 const README_PATH = 'README.md';
 
-// Markers in README.md to define where the thumbnails should be inserted  
+// Markers in README.md to define where the thumbnails should be inserted
 const START_MARKER = '<!-- THUMBNAIL_START -->';
 const END_MARKER = '<!-- THUMBNAIL_END -->';
 
@@ -43,25 +43,26 @@ async function generateThumbnails() {
                 const thumbnailRelativePath = path.join(THUMBNAILS_DIR, thumbnailFileName).replace(/\\/g, '/');
 
                 // 2. Extract the base name for the full-resolution image
-                // Remove the extension (e.g., '.png') first
                 const baseNameWithCustomSuffix = thumbnailFileName.substring(0, thumbnailFileName.length - ext.length);
-                // Then remove the ' (Custom)' suffix
                 const fullResBaseName = baseNameWithCustomSuffix.replace(' (Custom)', '');
 
                 // 3. Construct the relative path to the full-resolution image
-                // We assume the full-res image has the same extension as the thumbnail.
                 const fullResRelativePath = path.join(FULL_RESOLUTION_DIR, `${fullResBaseName}${ext}`).replace(/\\/g, '/');
 
-                // Create Markdown for a thumbnail link:
-                // [![Alt text (thumbnail filename)](thumbnail_path?raw=true)](full_resolution_path?raw=true)
-                // The `?raw=true` is crucial for GitHub to serve raw image content for display.
-                // The outer `[]()` makes the thumbnail itself a clickable link.
-                imageMarkdown.push(`[![${thumbnailFileName}](${thumbnailRelativePath}?raw=true)](${fullResRelativePath}?raw=true)`);
+                // Create HTML for a clickable thumbnail.
+                // We use <img src="..." width="..." alt="..." style="..."> inside an <a> tag.
+                // The `?raw=true` is still important for GitHub to serve the raw image content.
+                imageMarkdown.push(
+                    `<a href="${fullResRelativePath}?raw=true" style="display: inline-block; margin: 5px; text-decoration: none;">` +
+                    `<img src="${thumbnailRelativePath}?raw=true" alt="Thumbnail of ${fullResBaseName}" width="128" style="border: 1px solid #ddd; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); max-width: 100%; height: auto;">` +
+                    `</a>`
+                );
             }
         }
 
-        // Join all generated image Markdown links with spaces to form a simple gallery layout
-        const newContent = imageMarkdown.join(' ');
+        // Join all generated HTML image links
+        // We'll join them without spaces, relying on the 'margin' in the HTML style for spacing
+        const newContent = imageMarkdown.join('');
 
         // Reconstruct the README content by replacing the old thumbnail section
         const before = readmeContent.substring(0, startIndex + START_MARKER.length);
@@ -70,14 +71,12 @@ async function generateThumbnails() {
 
         // Write the updated README content back to the file
         await fs.promises.writeFile(README_PATH, updatedReadme);
-        console.log('README.md updated successfully with image thumbnails linking to full resolution!');
+        console.log('README.md updated successfully with HTML image thumbnails linking to full resolution!');
 
     } catch (error) {
-        // Log any errors that occur during the process
         console.error('Failed to generate thumbnails:', error);
-        process.exit(1); // Exit with an error code
+        process.exit(1);
     }
 }
 
-// Execute the main function
 generateThumbnails();
