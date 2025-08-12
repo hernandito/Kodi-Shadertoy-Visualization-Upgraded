@@ -1,14 +1,14 @@
-// CC0: Illuminated sphere
-//  I like the Windows 11 sphere wallpapers.
-//  Created this as an impression of them
+// CC0: Illuminated sphere II
+//  Continuing experimentation to get something that looks like W11 wallpapers
+//  Added an "atmosphere" and thought the results were appealing enough to share
 
-// Comment if you don't like the color cycling
 #define POSTPROC
 
-#define TIME        iTime*1.25
+#define TIME        iTime*5.0
 #define RESOLUTION  iResolution
 #define PI          3.141592654
 #define TAU         (2.0*PI)
+#define ROT(a)      mat2(cos(a), sin(a), -sin(a), cos(a))
 
 // License: WTFPL, author: sam hocevar, found: https://stackoverflow.com/a/17897228/418488
 const vec4 hsv2rgb_K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
@@ -36,6 +36,12 @@ const vec3 speCol2    = HSV2RGB(vec3(0.55, 0.25, 1.0));
 const vec3 diffCol1   = HSV2RGB(vec3(0.60, 0.90, 1.0));
 const vec3 diffCol2   = HSV2RGB(vec3(0.55, 0.90, 1.0));
 
+const vec3 sunDir1    = normalize(vec3(0., 0.1, 1.0));
+const vec3 sunDir2    = normalize(vec3(0., 0.66, 1.0));
+
+const vec3 lightPos1   = vec3(0.0, 10.0, 10.0);
+const vec3 lightPos2   = vec3(0.0, -80.0, 10.0);
+  
 // License: Unknown, author: nmz (twitter: @stormoid), found: https://www.shadertoy.com/view/NdfyRM
 vec3 sRGB(vec3 t) {
   return mix(1.055*pow(t, vec3(1./2.4)) - 0.055, 12.92*t, step(t, vec3(0.0031308)));
@@ -85,14 +91,16 @@ vec2 raySphere(vec3 ro, vec3 rd, vec4 dim) {
   return vec2( -b-h, -b+h );
 }
 
-vec3 skyColor(vec3 ro, vec3 rd) {
-  const vec3 sunDir1 = normalize(vec3(0., 0.1, 1.0));
-  const vec3 sunDir2 = normalize(vec3(0., 0.82, 1.0));
+const mat2 rot0 = ROT(0.0);
+mat2 g_rot = rot0;
+vec3 render0(vec3 ro, vec3 rd) {
   vec3 col = vec3(0.0);
   col += 0.025*skyCol;
+  vec3 sunDir2 = sunDir2;
+  sunDir2.yz *= g_rot;
 //  col += clamp(vec3(0.0025/abs(rd.y))*skyCol, 0.0, 1.0);
 //  col += skyCol*0.0005/pow((1.0001+((dot(sunDir1, rd)))), 2.0);
-  col += skyCol*0.0033/pow((1.0001+((dot(sunDir2, rd)))), 2.0);
+  col += skyCol*0.0005/pow((1.0001+((dot(sunDir2, rd)))), 2.0);
 
   float tp0  = rayPlane(ro, rd, vec4(vec3(0.0, 1.0, 0.0), 4.0));
   float tp1  = rayPlane(ro, rd, vec4(vec3(0.0, -1.0, 0.0), 6.0));
@@ -120,8 +128,8 @@ vec3 skyColor(vec3 ro, vec3 rd) {
   return clamp(col, 0.0, 10.0);
 }
 
-vec3 render(vec3 ro, vec3 rd) {
-  vec3 skyCol = skyColor(ro, rd);
+vec3 render1(vec3 ro, vec3 rd) {
+  vec3 skyCol = render0(ro, rd);
   vec3 col = skyCol;
   
   const vec4 sdim = vec4(vec3(0.0), 2.0);
@@ -129,9 +137,6 @@ vec3 render(vec3 ro, vec3 rd) {
   
   vec3 nsp = ro + rd*si.x;
 
-  const vec3 lightPos1   = vec3(0.0, 10.0, 10.0);
-  const vec3 lightPos2   = vec3(0.0, -80.0, 10.0);
-  
   vec3 nld1   = normalize(lightPos1-nsp); 
   vec3 nld2   = normalize(lightPos2-nsp); 
   
@@ -148,7 +153,7 @@ vec3 render(vec3 ro, vec3 rd) {
   ndif2       *= ndif2;
   vec3 nspe2  = pow(speCol2*max(dot(nld2, nref), 0.0), sf*vec3(0.9, 0.5, 0.5));
 
-  vec3 nsky   = skyColor(nsp, nref);
+  vec3 nsky   = render0(nsp, nref);
   float nfre  = 1.0+dot(rd, nnor);
   nfre        *= nfre;
 
@@ -159,14 +164,51 @@ vec3 render(vec3 ro, vec3 rd) {
   scol += nspe1;
   scol += nspe2;
 
-  if (si.x > 1.0) {
+  if (si.x > -1.0) {
     col = mix(col, scol, tanh_approx(0.9*(si.y-si.x)));
   }
 
   return col;
 }
 
+vec3 render2(vec3 ro, vec3 rd) {
+  const vec4 sdim = vec4(vec3(0.0), 2.33);
+  vec2 si = raySphere(ro, rd, sdim);
+  
+  vec3 nsp = ro + rd*si.x;
+
+  vec3 nld1   = normalize(lightPos1-nsp); 
+  vec3 nld2   = normalize(lightPos2-nsp); 
+  
+  vec3 nnor   = normalize(nsp - sdim.xyz);
+
+  vec3 nref   = reflect(rd, nnor);
+  vec3 nrefr  = refract(rd, nnor, 0.9);
+  if (nrefr == vec3(0.0)) {
+    nrefr = nref;
+  }
+
+  vec3 nsky   = render0(nsp, nref);
+  float nfre  = 1.0+dot(rd, nnor);
+  nfre        *= nfre;
+
+  vec3 scol = vec3(0.0); 
+  scol += nsky*mix(0.25, 1.0, nfre);
+
+  vec3 col0 = render0(ro, rd);
+  vec3 col1 = render1(nsp, nrefr);
+  vec3 col = col0;
+
+  if (si.x > -1.0) {
+    float ff = smoothstep(0.0, 1.75, si.y-si.x);
+    col = mix(col, col1+scol, ff); 
+  }
+
+  return col;
+}
+
 vec3 effect(vec2 p) {
+  g_rot = ROT(mix(0.4, -0.84, 0.5-0.5*cos(0.04*TIME)));
   const float fov = tan(TAU/6.0);
   const vec3 ro = 1.0*vec3(0.0, 2.0, 5.0);
   const vec3 la = vec3(0.0, 0.0, 0.0);
@@ -177,12 +219,12 @@ vec3 effect(vec2 p) {
   vec3 vv = cross(ww,uu);
   vec3 rd = normalize(-p.x*uu + p.y*vv + fov*ww);
 
-  vec3 col = render(ro, rd);
+  vec3 col = render2(ro, rd);
   
   return col;
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
   vec2 q = fragCoord/RESOLUTION.xy;
   vec2 p = -1. + 2. * q;
   p.x *= RESOLUTION.x/RESOLUTION.y;
@@ -190,10 +232,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   col = aces_approx(col); 
 #if defined(POSTPROC)  
   vec3 hsv = rgb2hsv(col);
-  hsv.x = fract(hsv.x-(-abs(p.x)*p.y+p.y*p.y)*0.08+0.01*TIME);
+  hsv.x = fract(hsv.x+(-abs(p.x)*p.y+p.y*p.y)*0.1-0.01*TIME);
   col = hsv2rgb(hsv);
 #endif  
   col = sRGB(col);
 
   fragColor = vec4(col, 1.0);
 }
+
+
