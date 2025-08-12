@@ -11,8 +11,8 @@ float rand(float seed)
 // Helper function to get ASCII value, replaces const array due to GLSL ES 1.00 limitations
 // You will need to manually map your message here.
 int getTargetAscii(int index) {
-    // Current message: "HELLO STACI!"
-    // H  E  L  L  O  _  S  T  A  C  I  !
+    // Current message: "HELLO SALLY!"
+    // H  E  L  L  O  _  S  A L L Y !
     if (index == 0) return 72; // H
     if (index == 1) return 69; // E
     if (index == 2) return 76; // L
@@ -20,10 +20,10 @@ int getTargetAscii(int index) {
     if (index == 4) return 79; // O
     if (index == 5) return 32; // [SPACE]
     if (index == 6) return 83; // S
-    if (index == 7) return 84; // T
-    if (index == 8) return 65; // A
-    if (index == 9) return 67; // C
-    if (index == 10) return 73; // I
+    if (index == 7) return 65; // A
+    if (index == 8) return 76; // L
+    if (index == 9) return 76; // L
+    if (index == 10) return 89; // Y
     if (index == 11) return 33; // !
     return 32; // Default for out-of-bounds or shorter messages (space)
 }
