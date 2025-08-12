@@ -4,8 +4,10 @@ Modifications of the individual shaders
 I thought the original list of shaders were a little old fashioned and not sophisticared enough - to me, they felt very 1990's. I used more modern looking shaders. I swapped the code of each individual shader file to use new code. I copied and/or slightly tweaked shader codes from the Shadertoy web site. 
 In addition, with the help of Grok AI, we created a script/service that cycles the shaders every 5 minutes. This way there is no fear of screen burn-in. And to switch around the eyecandy. The way to do this is, in the screensaver's settings, select Random as your screensaver. You must also install the cycler addon. 
 
-<img src="https://github.com/hernandito/Kodi-Shadertoy-Visualization-Upgraded/blob/main/new1.jpg" > 
-<img src="https://github.com/hernandito/Kodi-Shadertoy-Visualization-Upgraded/blob/main/new2.jpg" > 
+
+<!-- THUMBNAIL_START -->
+<!-- THUMBNAIL_END -->
+
 
 
 ## Instructions

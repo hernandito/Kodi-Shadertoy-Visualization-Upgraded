@@ -1,0 +1,37 @@
+name: Generate Image Thumbnails
+
+on:
+  push:
+    branches:
+      - main # Or 'master', depending on your default branch name
+    paths:
+      - 'screensaver.shadertoy/Shader-Screens/thumbnails/**' # Trigger when changes in thumbnail folder
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Run thumbnail generation script
+        run: node scripts/generate_thumbnails.js
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add README.md
+          git commit -m "Docs: Update image thumbnails in README" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
