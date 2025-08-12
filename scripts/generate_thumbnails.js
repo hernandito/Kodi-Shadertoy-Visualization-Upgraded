@@ -62,7 +62,7 @@ async function generateThumbnails() {
 
         // Join all generated HTML image links with non-breaking spaces for horizontal gaps.
         // Each `&nbsp;` creates a single space character. You can add more for larger gaps.
-        const newContent = imageMarkdown.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'); // Added 5 non-breaking spaces
+        const newContent = imageMarkdown.join('&nbsp;&nbsp;'); // Added 5 non-breaking spaces
 
         // Reconstruct the README content by replacing the old thumbnail section
         const before = readmeContent.substring(0, startIndex + START_MARKER.length);
