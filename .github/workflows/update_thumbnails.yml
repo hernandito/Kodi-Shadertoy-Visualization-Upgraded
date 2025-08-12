@@ -5,7 +5,7 @@ on:
     branches:
       - main # Or 'master', depending on your default branch name
     paths:
-      - 'screensaver.shadertoy/Shader-Screens/thumbnails/**' # Trigger when changes in thumbnail folder
+      - 'screensaver.shadertoy/Shader-Screens/thumbnails/**' # Trigger when changes in thumbnail folder 
   workflow_dispatch:
 
 jobs:

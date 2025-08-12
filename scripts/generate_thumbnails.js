@@ -6,7 +6,7 @@ const THUMBNAILS_DIR = 'screensaver.shadertoy/Shader-Screens/thumbnails'; // Dir
 const FULL_RESOLUTION_DIR = 'screensaver.shadertoy/Shader-Screens'; // Directory containing full-res images
 const README_PATH = 'README.md';
 
-// Markers in README.md to define where the thumbnails should be inserted 
+// Markers in README.md to define where the thumbnails should be inserted  
 const START_MARKER = '<!-- THUMBNAIL_START -->';
 const END_MARKER = '<!-- THUMBNAIL_END -->';
 
