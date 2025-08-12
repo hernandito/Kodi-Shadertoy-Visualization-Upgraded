@@ -9,7 +9,6 @@ In addition, with the help of Grok AI, we created a script/service that cycles t
 <!-- THUMBNAIL_END -->
 
 
-
 ## Instructions
 Copy both folders below to your Kodi's /addons folder:
 
