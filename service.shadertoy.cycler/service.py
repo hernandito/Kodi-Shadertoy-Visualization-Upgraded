@@ -179,6 +179,7 @@ FIXED_SHADERS = [
     'closeencounters.frag.glsl',
     'cloudframe.frag.glsl',
     'clouds.frag.glsl',
+    'cloudsearchlight.frag.glsl',
     'cloudycrystal.frag.glsl',
     'colorfullballoons.frag.glsl',
     'conciousstream.frag.glsl',
@@ -200,6 +201,7 @@ FIXED_SHADERS = [
     'culebra.frag.glsl',
     'dandelion.frag.glsl',
     'datawarehouse.frag.glsl',
+    'deathstar.frag.glsl',
     'demonseeman.frag.glsl',
     'destroyedborg.frag.glsl',
     'digitalboard.frag.glsl',
@@ -266,6 +268,7 @@ FIXED_SHADERS = [
     'happycloud.frag.glsl',
     'hashtag.frag.glsl',
     'hatchery.frag.glsl',
+    'heartleaves.frag.glsl',
     'heavenly.frag.glsl',
     'hexagonblocks.frag.glsl',
     'hexapolygon.frag.glsl',
@@ -389,6 +392,7 @@ FIXED_SHADERS = [
     'plasmaspider.frag.glsl',
     'plutoniancells.frag.glsl',
     'polyweave.frag.glsl',
+    'poolhall.frag.glsl',
     'popart.frag.glsl',
     'protoplasm.frag.glsl',
     'pseudoletters.frag.glsl',
@@ -405,6 +409,7 @@ FIXED_SHADERS = [
     'reflectivehextiles.frag.glsl',
     'rendering.frag.glsl',
     'ribbons.frag.glsl',
+    'ringedblob.frag.glsl',
     'rings.frag.glsl',
     'ringscube.frag.glsl',
     'ringworms.frag.glsl',
@@ -540,7 +545,7 @@ FIXED_SHADERS = [
     # 'dualtexture.frag.glsl' # Placeholder for the new shader using iChannel0 and iChannel1
 ]
 
-TESTER_SHADER = 'testershader.frag.glsl' # Set for testing  tex02 tex12 tex03a tex03c tex01 tex03a tex05a tex05 tex10 tex16 tex03 tex09
+TESTER_SHADER = 'poolhall.frag.glsl' # Set for testing  tex02 tex12 tex03a tex03c tex01 tex03a tex05a tex05 tex10 tex16 tex03 tex09
 
 class ShaderCycler(xbmc.Monitor):
     def __init__(self):

@@ -57,9 +57,7 @@ int getAsciiForStaticPassword(int index) {
     return 32; // Default for out-of-bounds
 }
 
-// ASCI 7-Bit Chart to get character codes. https://www.ascii-code.com/ASCII
-
-// ASCII values for "I_love_Sally" (This is the content for the SCRAMBLING line)
+// ASCII values for "I_love_Staci" (This is the content for the SCRAMBLING line)
 int getAsciiForScramblingMessage(int index) {
     if (index == 0) return 73;  // I
     if (index == 1) return 95;  // _
@@ -69,10 +67,10 @@ int getAsciiForScramblingMessage(int index) {
     if (index == 5) return 101; // e
     if (index == 6) return 95;  // _
     if (index == 7) return 83;  // S
-    if (index == 8) return 97; // a
-    if (index == 9) return 108;  // l
-    if (index == 10) return 108; // l
-    if (index == 11) return 121; // y
+    if (index == 8) return 116; // t
+    if (index == 9) return 97;  // a
+    if (index == 10) return 99; // c
+    if (index == 11) return 105; // i
     return 32; // Default for out-of-bounds
 }
 
