@@ -53,7 +53,7 @@ async function generateThumbnails() {
                 // Removed margin from <a> tag.
                 // Added padding to <img> tag for spacing (though GitHub may strip it).
                 imageMarkdown.push(
-                    `<a href="${fullResRelativePath}?raw=true" style="display: inline-block; text-decoration: none;">` +
+                    `<a href="${fullResRelativePath}?raw=true" target=ShaderPreview style="display: inline-block; text-decoration: none;">` +
                     `<img src="${thumbnailRelativePath}?raw=true" alt="Thumbnail of ${fullResBaseName}" width="128" style="border: 1px solid #ddd; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); max-width: 100%; height: auto;">` + // Removed padding here, as it was not rendered.
                     `</a>`
                 );
