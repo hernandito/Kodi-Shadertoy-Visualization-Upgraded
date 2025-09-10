@@ -1,4 +1,4 @@
-#define T (iTime * .5)
+#define T (iTime * 0.2)
 
 #define MORPH_FREQ (T*.05)
 #define P(z) (vec3(cos((z)*.1)*4.+tanh(cos((z) * .1) * 1.8) * 4., \

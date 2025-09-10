@@ -1,7 +1,25 @@
 
 I have a new Shadertoy shader that I need to make compatible with Kodi's Shadertoy addon. The addon only suports OpenGL ES 1.0. The below shader code uses tanh statements that dont work with Kodi. You have succesfully converted tanh shader in the past by using the below Tanh Conversion Method directive. Please apply this method to the below code.
 
+The Robust Tanh Conversion Method (Updated Definition)
 
+When you say: "Please apply the Robust Tanh Conversion Method to this shader," I'll know to:
+
+    Include the tanh_approx function:
+    Add the robust vec4 tanh_approx(vec4 x) { const float EPSILON = 1e-6; return x / (1.0 + max(abs(x), EPSILON)); } function at the top of the shader.
+
+    Refined Tanh Application:
+    For any complex tanh(value) calls (especially those involving multiple calculations), first, compute the value and store it in a temporary vec4 variable. Then, apply the tanh_approx function to that temporary variable. For simpler cases, a direct replacement is sufficient.
+
+    Ensure Explicit Variable Initialization:
+    Go through all declared variables (e.g., float, vec2, vec3, vec4s) and explicitly initialize them to appropriate default values (e.g., 0.0, vec4(0.0)) before their first use. This prevents undefined behavior common in minified GLSL code.
+
+    Enhance General Division Robustness:
+    Identify any divisions X / Y within the shader's core logic (especially in accumulation steps or distance calculations) and replace them with X / max(Y, 1E-6) (or a suitable small epsilon) to prevent NaN or Inf issues when Y approaches zero.
+
+
+
+#######################################
 "The Robust Tanh Conversion Method" (Updated Definition)
 When you say: "Please apply the Robust Tanh Conversion Method to this shader," I'll know to:
 
