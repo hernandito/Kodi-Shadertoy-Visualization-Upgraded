@@ -1,4 +1,7 @@
 
+This shader is now completed. Thank you; it came out great.
+
+
 I have a new Shadertoy shader that I need to make compatible with Kodi's Shadertoy addon. The addon only suports OpenGL ES 1.0. The below shader code uses tanh statements that dont work with Kodi. You have succesfully converted tanh shader in the past by using the below Tanh Conversion Method directive. Please apply this method to the below code.
 
 The Robust Tanh Conversion Method (Updated Definition)
@@ -16,6 +19,10 @@ When you say: "Please apply the Robust Tanh Conversion Method to this shader," I
 
     Enhance General Division Robustness:
     Identify any divisions X / Y within the shader's core logic (especially in accumulation steps or distance calculations) and replace them with X / max(Y, 1E-6) (or a suitable small epsilon) to prevent NaN or Inf issues when Y approaches zero.
+
+For reference, Kodi only supports OpenGL ES v.1.0. It does NOT support uniform statements or #version statements either. It also does not support gl_FragColor, but it does support fragColor and o=. 
+
+NEW SHADER CODE:
 
 
 

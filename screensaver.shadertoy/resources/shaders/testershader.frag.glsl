@@ -1,58 +1,71 @@
-/* 
- * zephyr mann
- * 2014
- */
+/*================================
+=        Ink Quasar        =
+=         Jaenam           =
+================================*/
 
-float pWid = 120.;
-float pHei = 100.;
-
-float getDepth(vec2 uv) {
-    float x = (uv.x - (iResolution.x*0.5)) / iResolution.x;
-	float y = (uv.y - (iResolution.y*0.5)) / iResolution.x;
-    
-    float offX = sin(iTime * 1.) * 0.2;
-    float offY = cos(iTime * 0.666) * 0.2;
-    
-    float d = floor(abs(y*2. + offY + sin((x+iTime*0.25)*10.) * 0.25) * 20.) * 0.05;
-    d = 1. - d;
-    d = 1. - (d*d*d*d);
-    
-    return d;
+// Custom function for 2D rotation matrix
+mat2 rot2D(float angle) {
+    float s = sin(angle);
+    float c = cos(angle);
+    return mat2(c, -s, s, c);
 }
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
+// Custom swirl function
+vec2 swirl(vec2 p, float strength, float speed) {
+    float r = length(p);
+    float a = atan(p.y, p.x) + strength / r * speed;
+    return vec2(r * cos(a), r * sin(a));
+}
+
+// Custom warp/noise function
+float warp(vec2 p, float speed) {
+    float n1 = fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+    float n2 = fract(sin(dot(p + speed, vec2(12.9898, 78.233))) * 43758.5453);
+    return mix(n1, n2, fract(speed));
+}
+
+// Simple Reinhard tonemapping function (more robust for low-precision environments)
+vec3 reinhard_tonemap(vec3 color) {
+    return color / (color + vec3(1.0));
+}
+
+void mainImage( out vec4 o, in vec2 fragCoord )
 {
-    float maxStep = 30.;
-    float d = 0.;
+    vec2 uv = fragCoord/iResolution.xy;
+    vec2 q = vec2(0.0);
+    float v = 0.0;
+    float l = 0.0;
+    vec2 p = vec2(0.0);
+    float noise = 0.0;
+    float d = 0.0;
+    vec3 pCol = vec3(0.0);
+    vec3 c = vec3(0.0);
     
-    vec2 uv = fragCoord.xy;
+    // Vignette
+    q = uv*(1.0-uv)*3.0; 
+    v = pow(q.x*q.y, 0.9); 
     
-    for(int count = 0; count < 100; count++) {
-        if(uv.x < pWid)
-          break;
-        
-        float d = getDepth(uv);
-        //d = 1.;
-        
-        uv.x -= pWid - (d * maxStep);
-    }
+    uv = (2.0*fragCoord-iResolution.xy)/iResolution.y;
     
-    float x = mod(uv.x + iTime*1., pWid) / pWid;
-    float y = mod(uv.y + iTime*4., pHei) / pHei;
-    vec3 rgb = texture( iChannel0, vec2(x,y), -100.0 ).yxz;
+    // Pulsing light
+    vec2 uv_rotated = uv * rot2D(-0.43);
+    vec2 uv_powered = vec2(pow(abs(uv_rotated.x) * 2.0, 0.4), pow(abs(uv_rotated.y) * 0.8, 0.4));
+    l = pow((0.6+0.3*abs(sin(1.2*iTime)))/length(uv_powered), 4.5);
     
-	fragColor = vec4(rgb,1.0);
+    // Scale and rotate uv
+    uv *= 2.0*mat2(0.7,-0.5,-0.4,1.2);
     
-    // view depth map
-    if(false)
-    	fragColor = vec4(vec3(getDepth(fragCoord.xy)),1.0);
-        
+    // Swirl uv + noise
+    p = swirl(uv, 2.0, 1.0);
+    noise = 0.5*warp(p+0.1*iTime*0.1, 0.5*iTime*0.1)+0.5;
+    p += noise + 0.5*iTime*0.1;
     
-    // add some guide dots
-    float dotWid = min(iResolution.y * 0.01, 5.0);
-    uv.x = (fragCoord.x - (iResolution.x*0.5));
-    uv.y = (fragCoord.y - (iResolution.y*0.5));
+    // Ink style colorize
+    d = smoothstep(0.0, 1.0, fract(p).y); 
     
-    if(distance(uv, vec2(maxStep*1.5,0.0)) < dotWid || distance(uv, vec2(-maxStep*1.5,0.0)) < dotWid)
-        fragColor = vec4(0.0);
+    pCol = pow(0.5 + 0.45*cos(fract(p).x + vec3(0.0, 1.0, 2.0)*1.2), vec3(1.12, 1.12, 1.12));    
+    c = pCol * pow(0.1/max(d, 1E-6), 0.4242);
+    
+    // Tonemap
+    o = vec4(reinhard_tonemap((c*c+l*d+d*d)*v), 1.0);
 }

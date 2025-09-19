@@ -101,6 +101,8 @@ FIXED_SHADERS = [
     'acidwallpaper.frag.glsl',
     'acrylicubes.frag.glsl',
     'acvent.frag.glsl',
+    'alienqueen.frag.glsl',
+    'alienqueencanal.frag.glsl',
     'alienquote.frag.glsl',
     'alientech.frag.glsl',
     'alienwaterworld.frag.glsl',
@@ -141,6 +143,7 @@ FIXED_SHADERS = [
     'blacktar.frag.glsl',
     'blade.frag.glsl',
     'blade2049.frag.glsl',
+    'blade2049a.frag.glsl',
     'bleepyblocks.frag.glsl',
     'blizzard.frag.glsl',
     'blobs.frag.glsl',
@@ -178,7 +181,9 @@ FIXED_SHADERS = [
     'chains.frag.glsl',
     'chandelier.frag.glsl',
     'checkeredflag.frag.glsl',
+    'cheeseball.frag.glsl',
     'chrome.frag.glsl',
+    'cinnamonbun.frag.glsl',
     'circuitcity.frag.glsl',
     'clearlyabug.frag.glsl',
     'closeencounters.frag.glsl',
@@ -214,6 +219,7 @@ FIXED_SHADERS = [
     'demonseeman.frag.glsl',
     'desertufo.frag.glsl',
     'destroyedborg.frag.glsl',
+    'diamondfactory.frag.glsl',
     'digitalboard.frag.glsl',
     'digitvortex.frag.glsl',
     'disarmbomb.frag.glsl',
@@ -222,6 +228,7 @@ FIXED_SHADERS = [
     'dizzyrings.frag.glsl',
     'drawerwall.frag.glsl',
     'drawingbezier.frag.glsl',
+    'dreamentity.frag.glsl',
     'dunes.frag.glsl',
     'dustgravity.frag.glsl',
     'dvdretro.frag.glsl',
@@ -230,6 +237,7 @@ FIXED_SHADERS = [
     'eschercorian.frag.glsl',
     'ether.frag.glsl',
     'eventhorizon.frag.glsl',
+    'everydayocean.frag.glsl',
     'eyedontknow.frag.glsl',
     'facade.frag.glsl',
     'fantasticvoyage.frag.glsl',
@@ -298,6 +306,7 @@ FIXED_SHADERS = [
     'infinitedoorway.frag.glsl',
     'infinitefall.frag.glsl',
     'infinitycube.frag.glsl',
+    'insomnium.frag.glsl',
     'inthetornado.frag.glsl',
     'intothefeather.frag.glsl',
     'intothehive.frag.glsl',
@@ -321,6 +330,7 @@ FIXED_SHADERS = [
     'liquidspectrum-mono.frag.glsl',
     'liquidtin.frag.glsl',
     'lizardskin.frag.glsl',
+    'lonelycloud.frag.glsl',
     'lostsoldier.frag.glsl',
     'magneticindicators.frag.glsl',
     'maibuterflai.frag.glsl',
@@ -330,15 +340,14 @@ FIXED_SHADERS = [
     'mandelbrot.frag.glsl',
     'mandelbrotcarvings.frag.glsl',
     'mandelsnow.frag.glsl',
-    'mapamundi.frag.glsl',
     'marchingdie.frag.glsl',
     'marsflythru.frag.glsl',
     'martiandusk.frag.glsl',
     'mclass.frag.glsl',
     'meatballs.frag.glsl',
+    'meldingsun.frag.glsl',
     'mellowvoronoi.frag.glsl',
     'mengerdrift.frag.glsl',
-    'mengermass.frag.glsl',
     'metaballspiral.frag.glsl', 
     'metalblocks.frag.glsl',
     'microtorus.frag.glsl',
@@ -371,6 +380,7 @@ FIXED_SHADERS = [
     'noiseanimlava.frag.glsl',
     'nubela.frag.glsl',
     'oceanwaves.frag.glsl',
+    'octagrams.frag.glsl',
     'octopus.frag.glsl',
     'octopusblood.frag.glsl',
     'octopuseye.frag.glsl',
@@ -395,6 +405,7 @@ FIXED_SHADERS = [
     'partlycloudy.frag.glsl',
     'pcb.frag.glsl',
     'permutations.frag.glsl',
+    'persianrug.frag.glsl',
     'phosphor3.frag.glsl',
     'picassoblocks.frag.glsl',
     'pinkblocks.frag.glsl',
@@ -507,9 +518,11 @@ FIXED_SHADERS = [
     'time.frag.glsl',
     'timetunnel.frag.glsl',
     'tinybubbles.frag.glsl',
+    'tippershow.frag.glsl',
     'tool.frag.glsl',
     'tool2.frag.glsl',
     'toonbubbles.frag.glsl',
+    'toonpeeks.frag.glsl',
     'toruspipes.frag.glsl',
     'torussketch.frag.glsl',
     'trainview.frag.glsl',
@@ -554,6 +567,7 @@ FIXED_SHADERS = [
     'wet.frag.glsl',
     'wetstone.frag.glsl',
     'whirl.frag.glsl',
+    'wigglyspiral.frag.glsl',
     'windyplanes.frag.glsl',
     'windysun.frag.glsl',
     'wiremesh.frag.glsl',
@@ -574,7 +588,7 @@ FIXED_SHADERS = [
     # 'dualtexture.frag.glsl' # Placeholder for the new shader using iChannel0 and iChannel1
 ]
 
-TESTER_SHADER = 'testershader.frag.glsl' # Set for testing  tex02 tex12 tex03a tex03c tex01 tex03a tex05a tex05 tex10 tex16 tex03 tex09
+TESTER_SHADER = 'testershader.frag.glsl' # Set for testing  tex02 tex12 tex03a tex03c tex01 tex03a tex05a tex05 tex10 tex16 tex03 tex09 tex22
 
 class ShaderCycler(xbmc.Monitor):
     def __init__(self):
@@ -901,7 +915,7 @@ class ShaderCycler(xbmc.Monitor):
 
 
 
-                    elif shader in ['canyon.frag.glsl', 'planeteclipse.frag.glsl']:
+                    elif shader in ['canyon.frag.glsl', 'planeteclipse.frag.glsl', 'insomnium.frag.glsl' ]:
                         texture_path = os.path.join(TEXTURE_PATH, 'tex22.png')
                         if xbmcvfs.exists(texture_path):
                             setting.text = texture_path
