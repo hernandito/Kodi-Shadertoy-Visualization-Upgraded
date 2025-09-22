@@ -588,7 +588,7 @@ FIXED_SHADERS = [
     # 'dualtexture.frag.glsl' # Placeholder for the new shader using iChannel0 and iChannel1
 ]
 
-TESTER_SHADER = 'testershader.frag.glsl' # Set for testing  tex02 tex12 tex03a tex03c tex01 tex03a tex05a tex05 tex10 tex16 tex03 tex09 tex22
+TESTER_SHADER = 'testershader.frag.glsl' # Set for testing  tex02 tex12 tex03a tex03c tex01 tex03a tex05a tex05 tex10 tex16 tex03 tex09 tex22 tex20
 
 class ShaderCycler(xbmc.Monitor):
     def __init__(self):
@@ -894,7 +894,7 @@ class ShaderCycler(xbmc.Monitor):
                             xbmc.log(f"{ADDON_ID}: Texture tex17.png not found for {shader}", xbmc.LOGWARNING)
 
 
-                    elif shader in ['caverocks.frag.glsl', 'bonestructure.frag.glsl']:
+                    elif shader in ['caverocks.frag.glsl', 'bonestructure.frag.glsl', 'ballinahole.frag.glsl']:
                         texture_path = os.path.join(TEXTURE_PATH, 'tex20.png')
                         if xbmcvfs.exists(texture_path):
                             setting.text = texture_path
