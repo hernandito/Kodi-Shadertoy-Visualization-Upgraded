@@ -155,6 +155,7 @@ FIXED_SHADERS = [
     'bluefire.frag.glsl',
     'bluescaffold.frag.glsl',
     'bocchi.frag.glsl',
+    'bokehautumm.frag.glsl',
     'bonemandel.frag.glsl',
     'bonestructure.frag.glsl',
     'bonestructure2.frag.glsl',
@@ -237,6 +238,7 @@ FIXED_SHADERS = [
     'eschercorian.frag.glsl',
     'ether.frag.glsl',
     'eventhorizon.frag.glsl',
+    'everydaychains.frag.glsl',
     'everydayocean.frag.glsl',
     'eyedontknow.frag.glsl',
     'facade.frag.glsl',
@@ -254,12 +256,14 @@ FIXED_SHADERS = [
     'flatbelts.frag.glsl',
     'floralfractal.frag.glsl',
     'flowingpaint.frag.glsl',
+    'fluffy.frag.glsl',
     'foreverever.frag.glsl',
     'foreverever2.frag.glsl',
     'fractalcubesteps.frag.glsl',
     'fractalland.frag.glsl',
     'fractalpiano.frag.glsl',
     'fractaltiling.frag.glsl',
+    'freefall.frag.glsl',
     'fur.frag.glsl',
     'gears.frag.glsl',
     'generators.frag.glsl',
@@ -324,8 +328,10 @@ FIXED_SHADERS = [
     'lavalamp2.frag.glsl',
     'leather.frag.glsl',
     'legolike.frag.glsl',
+    'lettermarch.frag.glsl',
     'likecorian.frag.glsl',
     'liketetris.frag.glsl',
+    'linethickness.frag.glsl',
     'liquidspectrum.frag.glsl',
     'liquidspectrum-mono.frag.glsl',
     'liquidtin.frag.glsl',
@@ -376,6 +382,7 @@ FIXED_SHADERS = [
     'newenergy.frag.glsl',
     'nightdive.frag.glsl',
     'nightsea.frag.glsl',
+    'nightspirits.frag.glsl',
     'nixieclock.frag.glsl',
     'noiseanimlava.frag.glsl',
     'nubela.frag.glsl',
@@ -386,6 +393,7 @@ FIXED_SHADERS = [
     'octopuseye.frag.glsl',
     'officehell.frag.glsl',
     'orangesky.frag.glsl',
+    'orbitingmetaballs.frag.glsl',
     'origamikaleidoscope.frag.glsl',
     'origamishift.frag.glsl',
     'outerlimits.frag.glsl',
@@ -433,6 +441,7 @@ FIXED_SHADERS = [
     'redburst.frag.glsl',
     'redgasgiant.frag.glsl',
     'redjulia.frag.glsl',
+    'rednumber11.frag.glsl'
     'redvelvet.frag.glsl',
     'reflectivehextiles.frag.glsl',
     'rendering.frag.glsl',
@@ -446,11 +455,13 @@ FIXED_SHADERS = [
     'rocketgantry.frag.glsl',
     'rolling.frag.glsl',
     'rollinghills.frag.glsl',
+    'rootsanctum.frag.glsl',
     'ropes.frag.glsl',
     'rorshak.frag.glsl',
     'rorshak2.frag.glsl',
     'rothko.frag.glsl',
     'runner.frag.glsl',
+    'sacrifice.frag.glsl',
     'sandstonecity.frag.glsl',
     'salgarnight.frag.glsl',
     'satphoto.frag.glsl',
@@ -471,6 +482,7 @@ FIXED_SHADERS = [
     'snowfall.frag.glsl',
     'solitaria.frag.glsl',
     'sonarr.frag.glsl',
+    'soulsofmercy.frag.glsl',
     'soylentgreen.frag.glsl',
     'spacecity.frag.glsl',
     'spacerace.frag.glsl',
@@ -505,10 +517,12 @@ FIXED_SHADERS = [
     'tendriltunnel.frag.glsl',
     'tentacles.frag.glsl',
     'terracedhills.frag.glsl',
+    'tetrachains.frag.glsl',
     'textdecode.frag.glsl',
     'textdecode2.frag.glsl',
     'textdecode3.frag.glsl',
     'theabyss.frag.glsl',
+    'theattack.frag.glsl',
     'theborg.frag.glsl',
     'theborg2.frag.glsl',
     'theshining.frag.glsl',
@@ -553,6 +567,7 @@ FIXED_SHADERS = [
     'unicornneurons.frag.glsl',
     'venus.frag.glsl',
     'vhsblues.frag.glsl',
+    'viberide.frag.glsl',
     'viralblob.frag.glsl',
     'viralblob-red.frag.glsl',
     'vitals.frag.glsl',
@@ -588,7 +603,7 @@ FIXED_SHADERS = [
     # 'dualtexture.frag.glsl' # Placeholder for the new shader using iChannel0 and iChannel1
 ]
 
-TESTER_SHADER = 'testershader.frag.glsl' # Set for testing  tex02 tex12 tex03a tex03c tex01 tex03a tex05a tex05 tex10 tex16 tex03 tex09 tex22 tex20
+TESTER_SHADER = 'testershader.frag.glsl' # Set for testing  tex02 tex12 tex03a tex03c tex01 tex03a tex05a tex05 tex10 tex16 tex03 tex09 tex22 tex20 tex21
 
 class ShaderCycler(xbmc.Monitor):
     def __init__(self):
@@ -766,7 +781,7 @@ class ShaderCycler(xbmc.Monitor):
                             setting.text = ''
                             xbmc.log(f"{ADDON_ID}: Texture tex16.png not found for {shader}", xbmc.LOGWARNING)
 
-                    elif shader in ['woodblocks.frag.glsl', 'wiremesh.frag.glsl', 'truchetfield.frag.glsl', 'woodmenger.frag.glsl', 'wooddonut.frag.glsl', 'creamywood.frag.glsl', 'britneyspaceship.frag.glsl']:
+                    elif shader in ['woodblocks.frag.glsl', 'wiremesh.frag.glsl', 'truchetfield.frag.glsl', 'woodmenger.frag.glsl', 'wooddonut.frag.glsl', 'creamywood.frag.glsl', 'britneyspaceship.frag.glsl', 'rootsanctum.frag.glsl' ]:
                         texture_path = os.path.join(TEXTURE_PATH, 'tex05.png')
                         if xbmcvfs.exists(texture_path):
                             setting.text = texture_path
@@ -904,7 +919,7 @@ class ShaderCycler(xbmc.Monitor):
                             xbmc.log(f"{ADDON_ID}: Texture tex16.png not found for {shader}", xbmc.LOGWARNING)
 
 
-                    elif shader in ['textdecode.frag.glsl', 'textdecode2.frag.glsl', 'trainview.frag.glsl', 'textdecode3.frag.glsl']:
+                    elif shader in ['textdecode.frag.glsl', 'textdecode2.frag.glsl', 'trainview.frag.glsl', 'textdecode3.frag.glsl', 'lettermarch.frag.glsl']:
                         texture_path = os.path.join(TEXTURE_PATH, 'tex21.png')
                         if xbmcvfs.exists(texture_path):
                             setting.text = texture_path
@@ -915,7 +930,7 @@ class ShaderCycler(xbmc.Monitor):
 
 
 
-                    elif shader in ['canyon.frag.glsl', 'planeteclipse.frag.glsl', 'insomnium.frag.glsl' ]:
+                    elif shader in ['canyon.frag.glsl', 'planeteclipse.frag.glsl', 'insomnium.frag.glsl']:
                         texture_path = os.path.join(TEXTURE_PATH, 'tex22.png')
                         if xbmcvfs.exists(texture_path):
                             setting.text = texture_path
