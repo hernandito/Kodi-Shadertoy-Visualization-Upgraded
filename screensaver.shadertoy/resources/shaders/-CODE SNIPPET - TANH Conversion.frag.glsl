@@ -22,10 +22,19 @@ When you say: "Please apply the Robust Tanh Conversion Method to this shader," I
 
 For reference, Kodi only supports OpenGL ES v.1.0. It does NOT support uniform statements or #version statements either. It also does not support gl_FragColor, but it does support fragColor and o=. 
 
+"Please write the GLSL code to be Kodi/Shadertoy-compatible (GLSL ES 1.0), but ensuring Web (ES 3.0+) compatibility. This means:
+
+    Use the modern texture() function (instead of texture2D()).
+
+    Assign the final output to the variable o (or fragColor), not gl_FragColor.
+
+    Crucially, do not include a #version directive, or explicit uniform statements."
+
+
 NEW SHADER CODE:
 
 
-
+#eeb924
 #######################################
 "The Robust Tanh Conversion Method" (Updated Definition)
 When you say: "Please apply the Robust Tanh Conversion Method to this shader," I'll know to:
