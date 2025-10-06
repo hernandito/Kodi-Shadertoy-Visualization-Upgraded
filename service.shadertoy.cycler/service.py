@@ -13,7 +13,7 @@ SETTINGS_PATH = "/storage/.kodi/userdata/addon_data/screensaver.shadertoy/settin
 TEXTURE_PATH = xbmcvfs.translatePath('special://home/addons/screensaver.shadertoy/resources/')
 CYCLE_INTERVAL = 60 # 10 seconds as set
 LOG_INTERVAL = 52    # Log every 30 seconds
-SetToTester = 0      # Set to 1 to use only testershader.frag.glsl, 0 to cycle through FIXED_SHADERS
+SetToTester = 1      # Set to 1 to use only testershader.frag.glsl, 0 to cycle through FIXED_SHADERS
 
 
 ##############################################
@@ -115,6 +115,7 @@ FIXED_SHADERS = [
     'angrycloud.frag.glsl',
     'anothertanh.frag.glsl',
     'anothertunnel.frag.glsl',
+    'anothertunnel2.frag.glsl',
     'apollonianstructure.frag.glsl',
     'apollospiral.frag.glsl',
     'approachingheaven.frag.glsl',
@@ -211,6 +212,7 @@ FIXED_SHADERS = [
     'crtwobblycube.frag.glsl',
     'crudeoil.frag.glsl',
     'crystalgarden.frag.glsl',
+    'crystalineentity.frag.glsl',
     'crystalskull.frag.glsl',
     'cubedizzy.frag.glsl',
     'cubelights.frag.glsl',
@@ -269,6 +271,7 @@ FIXED_SHADERS = [
     'fractalcubesteps.frag.glsl',
     'fractalland.frag.glsl',
     'fractalpiano.frag.glsl',
+    'fractalpile.frag.glsl',
     'fractaltiling.frag.glsl',
     'freefall.frag.glsl',
     'funtubes.frag.glsl',
@@ -378,6 +381,7 @@ FIXED_SHADERS = [
     'mountainsunrise.frag.glsl',
     'mrbert.frag.glsl',
     'mrbouncy.frag.glsl',
+    'mtfractal.frag.glsl',
     'murakami.frag.glsl',
     'murkywater.frag.glsl',
     'muscletissue.frag.glsl',
@@ -454,11 +458,13 @@ FIXED_SHADERS = [
     'redalps.frag.glsl',
     'redburst.frag.glsl',
     'redgasgiant.frag.glsl',
+    'redrods.frag.glsl'
     'redjulia.frag.glsl',
     'rednumber11.frag.glsl'
     'redvelvet.frag.glsl',
     'reflectivehextiles.frag.glsl',
     'rendering.frag.glsl',
+    'restlesssouls.frag.glsl',
     'ribbons.frag.glsl',
     'ringedblob.frag.glsl',
     'rings.frag.glsl',
